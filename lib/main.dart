@@ -1,4 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bili/db/hi_cache.dart';
+import 'package:flutter_bili/http/core/hi_net.dart';
+import 'package:flutter_bili/http/dao/login_dao.dart';
+import 'package:flutter_bili/http/request/test_request.dart';
 
 void main() {
   runApp(const MyApp());
@@ -48,18 +54,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  // 初始化cache
+  @override
+  void initState() {
+    super.initState();
+    HiCache.preInit();
   }
+
+  Future<void> _incrementCounter() async {
+    var result = await LoginDao.login("Tom", "123");
+    print("result is: ${result}");
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter',
+              '0',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
