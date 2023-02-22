@@ -22,9 +22,9 @@ class HiNet {
 
     if (response == null) {
       if (error != null) {
-        return error;
+        throw error;
       }
-      return HiNetError(-1, "请求接口失败");
+      throw HiNetError(-1, "请求接口失败");
     }
     
     var result = response.data;

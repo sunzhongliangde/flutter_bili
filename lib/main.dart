@@ -6,117 +6,125 @@ import 'package:flutter_bili/http/core/hi_net.dart';
 import 'package:flutter_bili/http/dao/login_dao.dart';
 import 'package:flutter_bili/http/request/test_request.dart';
 
+import 'model/video_model.dart';
+import 'page/home_page.dart';
+import 'page/login_page.dart';
+import 'page/regiatration_page.dart';
+import 'page/video_detail_page.dart';
+import 'util/color.dart';
+
 void main() {
-  runApp(const MyApp());
+  runApp(const BiliApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class BiliApp extends StatefulWidget {
+  const BiliApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<BiliApp> createState() => _BiliAppState();
+}
+
+class _BiliAppState extends State<BiliApp> {
+  final BiliRouteDelegate _routeDelegate = BiliRouteDelegate();
+  final BiliRouteInformationParser _routeInformationParser =
+      BiliRouteInformationParser();
   @override
   Widget build(BuildContext context) {
+    var widget = Router(
+      routerDelegate: _routeDelegate,
+      routeInformationParser: _routeInformationParser,
+      routeInformationProvider: PlatformRouteInformationProvider(
+          initialRouteInformation: const RouteInformation(location: "/")),
+    );
+
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: widget,
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
-  // 初始化cache
-  @override
-  void initState() {
-    super.initState();
-    HiCache.preInit();
-  }
-
-  Future<void> _incrementCounter() async {
-    var result = await LoginDao.login("Tom", "123");
-    print("result is: ${result}");
-  }
-
+class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin<BiliRoutePath> {
+  final GlobalKey<NavigatorState> navigatorKey;
+  // 构造方法
+  // 为Navigator设置一个key，
+  // 必要的时候可以通过navigationKey.currentState来获取到NavigatorState
+  BiliRouteDelegate() : navigatorKey = GlobalKey<NavigatorState>();
+  List<MaterialPage> pages = [];
+  VideoModel? videoModel;
+  late BiliRoutePath path;
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '0',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    // 构建路由堆栈
+    pages = [
+      pageWrap(HomePage(
+        onJumpToDetail: (v) {
+          videoModel = v;
+          notifyListeners();
+        },
+      )),
+      if (videoModel != null) pageWrap(VideoDetailPage(videoModel: videoModel!))
+    ];
+    
+    return Navigator(
+      key: navigatorKey,
+      pages: pages,
+      onPopPage: (router, result) {
+        if (!router.didPop(result)) {
+          return false;
+        }
+        return true;
+      },
     );
   }
+
+  @override
+  void addListener(VoidCallback listener) {
+    print(listener);
+  }
+
+  @override
+  Future<bool> popRoute() {
+    // TODO: implement popRoute
+    throw UnimplementedError();
+  }
+
+  @override
+  void removeListener(VoidCallback listener) {
+    // TODO: implement removeListener
+  }
+
+  @override
+  Future<void> setNewRoutePath(BiliRoutePath configuration) async {
+    path = configuration;
+    print("===config:${path}");
+  }
+}
+
+// 主要用于web，持有BiliRouteInformationProvider提供的RouteInformation
+// 可以将其解析为我们定义的数据类型
+class BiliRouteInformationParser extends RouteInformationParser {
+  @override
+  Future parseRouteInformation(RouteInformation routeInformation) async {
+    final uri = Uri.parse(routeInformation.location ?? "");
+    print("uri:${uri}===${uri.pathSegments}");
+    if (uri.pathSegments.isEmpty) {
+      return BiliRoutePath.home();
+    }
+    return BiliRoutePath.detail();
+  }
+}
+
+// 定义路由数据，path
+class BiliRoutePath {
+  final String location;
+  BiliRoutePath.home() : location = "/";
+  BiliRoutePath.detail() : location = "/detail";
+}
+
+/// 创建页面
+pageWrap(Widget child) {
+  print("===laile s");
+  return MaterialPage(key: ValueKey(child.hashCode), child: child);
 }

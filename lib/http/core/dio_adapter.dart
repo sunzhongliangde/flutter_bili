@@ -7,7 +7,8 @@ class DioAdapter extends HiNetAdapter {
   @override
   Future<HiNetResponse<T>> send<T>(BaseRequest request) async {
     Response? response;
-    var option = Options(headers: request.header);
+    var option =
+        Options(headers: request.header, responseType: ResponseType.json);
     DioError? error;
     try {
       if (request.httpMethod() == HttpMethod.GET) {
@@ -24,11 +25,11 @@ class DioAdapter extends HiNetAdapter {
       response = e.response;
       print("httpMethod: ${request.httpMethod()}");
       print("requestParams: ${request.params}");
-      print(e.message);
+      print("返回报错：${e.message}");
     }
 
     if (error != null) {
-      throw HiNetError(response?.hashCode ?? -1, error.toString(),
+      throw HiNetError(response?.statusCode ?? -1, error.toString(),
           data: response?.data);
     }
     return HiNetResponse(request, response?.statusCode, response?.data,
