@@ -30,21 +30,37 @@ class _BiliAppState extends State<BiliApp> {
       BiliRouteInformationParser();
   @override
   Widget build(BuildContext context) {
-    var widget = Router(
-      routerDelegate: _routeDelegate,
-      routeInformationParser: _routeInformationParser,
-      routeInformationProvider: PlatformRouteInformationProvider(
-          initialRouteInformation: const RouteInformation(location: "/")),
-    );
+    return FutureBuilder<HiCache?>(
+      future: HiCache.preInit(),
+      builder: (BuildContext context, AsyncSnapshot<HiCache?> snapshop) {
+        // 如果路由正在加载中的状态，返回一个loading页面
+        var widget = snapshop.connectionState == ConnectionState.done
+            ? Router(
+                routerDelegate: _routeDelegate,
+                routeInformationParser: _routeInformationParser,
+                routeInformationProvider: PlatformRouteInformationProvider(
+                    initialRouteInformation:
+                        const RouteInformation(location: "/")),
+              )
+            : const Scaffold(
+                body: Center(
+                child: CircularProgressIndicator(),
+              ));
 
-    return MaterialApp(
-      home: widget,
+        return MaterialApp(
+          home: widget,
+          theme: ThemeData(
+            primarySwatch: white,
+          ),
+        );
+      },
     );
   }
 }
 
 class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<BiliRoutePath> {
+  @override
   final GlobalKey<NavigatorState> navigatorKey;
   // 构造方法
   // 为Navigator设置一个key，
@@ -52,7 +68,7 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
   BiliRouteDelegate() : navigatorKey = GlobalKey<NavigatorState>();
   List<MaterialPage> pages = [];
   VideoModel? videoModel;
-  late BiliRoutePath path;
+  BiliRoutePath? path;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +82,7 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
       )),
       if (videoModel != null) pageWrap(VideoDetailPage(videoModel: videoModel!))
     ];
-    
+
     return Navigator(
       key: navigatorKey,
       pages: pages,
@@ -80,35 +96,18 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
   }
 
   @override
-  void addListener(VoidCallback listener) {
-    print(listener);
-  }
-
-  @override
-  Future<bool> popRoute() {
-    // TODO: implement popRoute
-    throw UnimplementedError();
-  }
-
-  @override
-  void removeListener(VoidCallback listener) {
-    // TODO: implement removeListener
-  }
-
-  @override
   Future<void> setNewRoutePath(BiliRoutePath configuration) async {
     path = configuration;
-    print("===config:${path}");
   }
 }
 
 // 主要用于web，持有BiliRouteInformationProvider提供的RouteInformation
 // 可以将其解析为我们定义的数据类型
-class BiliRouteInformationParser extends RouteInformationParser {
+class BiliRouteInformationParser extends RouteInformationParser<BiliRoutePath> {
   @override
-  Future parseRouteInformation(RouteInformation routeInformation) async {
-    final uri = Uri.parse(routeInformation.location ?? "");
-    print("uri:${uri}===${uri.pathSegments}");
+  Future<BiliRoutePath> parseRouteInformation(
+      RouteInformation routeInformation) async {
+    final uri = Uri.parse(routeInformation.location ?? "/");
     if (uri.pathSegments.isEmpty) {
       return BiliRoutePath.home();
     }
@@ -125,6 +124,5 @@ class BiliRoutePath {
 
 /// 创建页面
 pageWrap(Widget child) {
-  print("===laile s");
   return MaterialPage(key: ValueKey(child.hashCode), child: child);
 }

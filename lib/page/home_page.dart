@@ -21,8 +21,7 @@ class _HomePageState extends State<HomePage> {
           MaterialButton(
             onPressed: () {
               if (widget.onJumpToDetail != null) {
-                print("点击了按钮");
-                widget.onJumpToDetail!(VideoModel(vid: "1231"));
+                widget.onJumpToDetail!(VideoModel(vid: "12311111"));
               }
             },
             child: const Text("详情"),
