@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bili/http/core/hi_error.dart';
 import 'package:flutter_bili/http/dao/login_dao.dart';
+import 'package:flutter_bili/navigator/hi_navigator.dart';
 import 'package:flutter_bili/widget/login_button.dart';
 import 'package:flutter_bili/widget/login_input.dart';
 
@@ -10,9 +11,7 @@ import '../widget/appbar.dart';
 import '../widget/login_Effect.dart';
 
 class RegistrationPage extends StatefulWidget {
-  final VoidCallback? onJumpToLogin;
-
-  const RegistrationPage({this.onJumpToLogin, key}) : super(key: key);
+  const RegistrationPage({key}) : super(key: key);
 
   @override
   State<RegistrationPage> createState() => _RegistrationPageState();
@@ -30,7 +29,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar("注册", "登录", widget.onJumpToLogin),
+      appBar: appBar("注册", "登录", () {
+        HiNavigator.getInstance().onJumpTo(RouteStatus.registration);
+      }),
       body: ListView(
         children: [
           LoginEffect(protect: protect),
@@ -107,14 +108,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
           await LoginDao.registation(userName!, password!, "3234", "1233");
       if (result["code"] == 0) {
         showToast("注册成功");
-        if (widget.onJumpToLogin != null) {
-          widget.onJumpToLogin!();
-        }
+        HiNavigator.getInstance().onJumpTo(RouteStatus.login);
       } else {
-        showToast("注册失败：${result.message}");
+        showToast("注册失败：${result["msg"]}");
       }
     } on HiNetError catch (e) {
-      print("注册失败:${e.code}");
       showToast("注册失败：${e.message}");
     }
   }

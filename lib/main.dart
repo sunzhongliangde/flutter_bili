@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bili/db/hi_cache.dart';
-import 'package:flutter_bili/http/core/hi_net.dart';
 import 'package:flutter_bili/http/dao/login_dao.dart';
-import 'package:flutter_bili/http/request/test_request.dart';
+import 'package:flutter_bili/navigator/hi_navigator.dart';
+import 'package:flutter_bili/util/toast.dart';
 
 import 'model/video_model.dart';
 import 'page/home_page.dart';
@@ -26,8 +26,6 @@ class BiliApp extends StatefulWidget {
 
 class _BiliAppState extends State<BiliApp> {
   final BiliRouteDelegate _routeDelegate = BiliRouteDelegate();
-  final BiliRouteInformationParser _routeInformationParser =
-      BiliRouteInformationParser();
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<HiCache?>(
@@ -37,10 +35,6 @@ class _BiliAppState extends State<BiliApp> {
         var widget = snapshop.connectionState == ConnectionState.done
             ? Router(
                 routerDelegate: _routeDelegate,
-                routeInformationParser: _routeInformationParser,
-                routeInformationProvider: PlatformRouteInformationProvider(
-                    initialRouteInformation:
-                        const RouteInformation(location: "/")),
               )
             : const Scaffold(
                 body: Center(
@@ -65,54 +59,93 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
   // 构造方法
   // 为Navigator设置一个key，
   // 必要的时候可以通过navigationKey.currentState来获取到NavigatorState
-  BiliRouteDelegate() : navigatorKey = GlobalKey<NavigatorState>();
+  BiliRouteDelegate() : navigatorKey = GlobalKey<NavigatorState>() {
+    // 实现跳转逻辑
+    HiNavigator.getInstance().registationRouteJump(
+      RouteJumpListener((routeStatus, {args}) {
+        _routeStatus = routeStatus;
+        if (routeStatus == RouteStatus.detail) {
+          videoModel = args!['videoModel'];
+        }
+        notifyListeners();
+      })
+    );
+  }
+  RouteStatus _routeStatus = RouteStatus.home;
   List<MaterialPage> pages = [];
   VideoModel? videoModel;
-  BiliRoutePath? path;
+
+  // getter
+  // 拦截路由状态，如果没有登录，并且不是在注册页面，就打开登录页面
 
   @override
   Widget build(BuildContext context) {
-    // 构建路由堆栈
-    pages = [
-      pageWrap(HomePage(
-        onJumpToDetail: (v) {
-          videoModel = v;
-          notifyListeners();
-        },
-      )),
-      if (videoModel != null) pageWrap(VideoDetailPage(videoModel: videoModel!))
-    ];
+    // 管理路由堆栈
+    var index = getPageIndex(pages, _routeStatus);
+    List<MaterialPage> tempPages = pages;
+    if (index != -1) {
+      tempPages = tempPages.sublist(0, index);
+    }
+    var page;
+    if (routeStatus == RouteStatus.home) {
+      // 跳转首页时，将栈中其他页面出栈，因为首页无法回退
+      pages.clear();
+      page = pageWrap(const HomePage());
+    } else if (routeStatus == RouteStatus.detail) {
+      page = pageWrap(VideoDetailPage(videoModel: videoModel!));
+    } else if (routeStatus == RouteStatus.registration) {
+      page = pageWrap(const RegistrationPage());
+    } else if (routeStatus == RouteStatus.login) {
+      page = pageWrap(const LoginPage());
+    }
+    tempPages = [...tempPages, page];
+    pages = tempPages;
 
-    return Navigator(
+    // 通知路由状态发生变化
+    HiNavigator.getInstance().notify(tempPages, pages);
+
+    return WillPopScope(child: Navigator(
       key: navigatorKey,
       pages: pages,
       onPopPage: (router, result) {
+        if (router.settings is MaterialPage) {
+          // 登录页未登录拦截
+          if ((router.settings as MaterialPage).child is LoginPage) {
+            if (!LoginDao.isLogin()) {
+              showToast("请先登录");
+              return false;
+            }
+          }
+        }
+        // 执行返回操作
         if (!router.didPop(result)) {
           return false;
         }
+        var temp = [...pages];
+        pages.removeLast();
+        // 通知路由状态变化
+        HiNavigator.getInstance().notify(pages, temp);
         return true;
       },
+      // 安卓物理键返回，无法返回上一页
+    ), onWillPop: () async => !await navigatorKey.currentState!.maybePop(),
     );
   }
 
-  @override
-  Future<void> setNewRoutePath(BiliRoutePath configuration) async {
-    path = configuration;
-  }
-}
-
-// 主要用于web，持有BiliRouteInformationProvider提供的RouteInformation
-// 可以将其解析为我们定义的数据类型
-class BiliRouteInformationParser extends RouteInformationParser<BiliRoutePath> {
-  @override
-  Future<BiliRoutePath> parseRouteInformation(
-      RouteInformation routeInformation) async {
-    final uri = Uri.parse(routeInformation.location ?? "/");
-    if (uri.pathSegments.isEmpty) {
-      return BiliRoutePath.home();
+  RouteStatus get routeStatus {
+    if (_routeStatus != RouteStatus.registration && !hasLogin) {
+      return _routeStatus = RouteStatus.login;
+    } else if (videoModel != null) {
+      return _routeStatus = RouteStatus.detail;
+    } else {
+      return _routeStatus;
     }
-    return BiliRoutePath.detail();
   }
+
+  bool get hasLogin => LoginDao.isLogin();
+
+  @override
+  Future<void> setNewRoutePath(BiliRoutePath configuration) async {}
 }
 
 // 定义路由数据，path

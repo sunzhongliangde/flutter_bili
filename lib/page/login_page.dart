@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bili/http/core/hi_error.dart';
+import 'package:flutter_bili/navigator/hi_navigator.dart';
 import 'package:flutter_bili/widget/login_input.dart';
 import '../http/dao/login_dao.dart';
 import '../util/string_util.dart';
@@ -24,21 +25,19 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar("密码登录", "注册", () {}),
+      appBar: appBar("密码登录", "注册", () {
+        HiNavigator.getInstance().onJumpTo(RouteStatus.registration);
+      }),
       body: ListView(
         children: [
           LoginEffect(
             protect: protect,
           ),
-          LoginInput(
-            "用户名", 
-            hint: "请输入用户名", 
-            defaultValue: "hhh",
-            onChanged: (text) {
-              userName = text;
-              checkInput();
-            }
-          ),
+          LoginInput("用户名", hint: "请输入用户名", defaultValue: "hhh",
+              onChanged: (text) {
+            userName = text;
+            checkInput();
+          }),
           LoginInput(
             "密码",
             defaultValue: "123",
@@ -70,7 +69,6 @@ class _LoginPageState extends State<LoginPage> {
   // 检查登录按钮是否应该高亮
   void checkInput() {
     bool enable = false;
-    print("${userName}===${password}");
     if (isNotEmpty(userName) && isNotEmpty(password)) {
       enable = true;
     }
@@ -85,11 +83,12 @@ class _LoginPageState extends State<LoginPage> {
       showToast("请输入用户名或密码");
       return;
     }
-    
+
     try {
       var result = await LoginDao.login(userName!, password!);
       if (result['code'] == 0) {
         showToast("登录成功");
+        HiNavigator.getInstance().onJumpTo(RouteStatus.home);
       } else {
         showWarnToast(result['msg'] ?? "登录失败");
       }

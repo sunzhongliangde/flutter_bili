@@ -3,6 +3,7 @@ import 'package:flutter_bili/http/core/hi_net.dart';
 import 'package:flutter_bili/http/request/base_request.dart';
 import 'package:flutter_bili/http/request/login_request.dart';
 import 'package:flutter_bili/http/request/registration_request.dart';
+import 'package:flutter_bili/util/string_util.dart';
 
 class LoginDao {
   // ignore: constant_identifier_names
@@ -22,7 +23,7 @@ class LoginDao {
     BaseRequest request;
     if (imoccId != null && orderId != null) {
       request = RegistrationRequest();
-      request.addParams("imoccId", imoccId);
+      request.addParams("imoocId", imoccId);
       request.addParams("orderId", orderId);
     } else {
       request = LoginRequest();
@@ -33,15 +34,20 @@ class LoginDao {
     var result = await HiNet.getInstance().fire(request);
     if (result["code"] == 0 && result["data"] != null) {
       HiCache.getInstance().setString(BOARDING_PASS, result["data"]);
-      print("设置登录auth-token:${HiCache.getInstance().get(BOARDING_PASS)}");
+      print("登录成功，设置登录auth-token:${HiCache.getInstance().get(BOARDING_PASS)}");
     } else {
-      HiCache.getInstance()
-          .setString(BOARDING_PASS, "A0B617C85FAC5F5537D52857D6A58065");
+      // HiCache.getInstance()
+      //    .setString(BOARDING_PASS, "A0B617C85FAC5F5537D52857D6A58065");
     }
     return result;
   }
 
   static getBoardingPass() {
     return HiCache.getInstance().get(BOARDING_PASS);
+  }
+
+  static bool isLogin() {
+    final boardingPass = LoginDao.getBoardingPass();
+    return !isEmpty(boardingPass);
   }
 }
