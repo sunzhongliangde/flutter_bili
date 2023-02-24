@@ -8,7 +8,6 @@ import 'package:flutter_bili/util/toast.dart';
 
 import 'model/video_model.dart';
 import 'navigator/bottom_navigator.dart';
-import 'page/home_page.dart';
 import 'page/login_page.dart';
 import 'page/regiatration_page.dart';
 import 'page/video_detail_page.dart';

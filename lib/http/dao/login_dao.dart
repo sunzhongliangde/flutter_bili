@@ -7,7 +7,7 @@ import 'package:flutter_bili/util/string_util.dart';
 
 class LoginDao {
   // ignore: constant_identifier_names
-  static const String BOARDING_PASS = "BOARDING_PASS";
+  static const String BOARDING_PASS = "boarding-pass";
 
   static login(String userName, String password) {
     return _send(userName, password);

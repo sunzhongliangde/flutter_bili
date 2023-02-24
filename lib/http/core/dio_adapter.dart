@@ -25,6 +25,7 @@ class DioAdapter extends HiNetAdapter {
       response = e.response;
       print("httpMethod: ${request.httpMethod()}");
       print("requestParams: ${request.params}");
+      print("requestHeader: ${request.header}");
       print("返回报错：${e.message}");
     }
 

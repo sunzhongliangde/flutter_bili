@@ -34,7 +34,6 @@ abstract class BaseRequest {
     } else {
       uri = Uri.http(authority(), pathStr, params);
     }
-    print('uri: ${uri.toString()}');
     if (needLogin()) {
       addHeader(LoginDao.BOARDING_PASS, LoginDao.getBoardingPass());
     }
