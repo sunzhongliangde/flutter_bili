@@ -10,20 +10,21 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   RouteChangeListener? listener;
   @override
   void initState() {
     super.initState();
     // 注册路由监听
-    HiNavigator.getInstance().addListener(listener=(current, pre) {
+    HiNavigator.getInstance().addListener(listener = (current, pre) {
       if (widget == current.widget || current.widget is HomePage) {
-        print("页面被打开");
+        print("首页页面显示");
       } else if (widget == pre?.widget || pre?.widget is HomePage) {
-        print("页面dismiss");
+        print("首页页面dismiss");
       }
     });
   }
+
   @override
   void dispose() {
     if (listener != null) {
@@ -41,10 +42,8 @@ class _HomePageState extends State<HomePage> {
           const Text("首页"),
           MaterialButton(
             onPressed: () {
-              HiNavigator.getInstance().onJumpTo(
-                RouteStatus.detail, 
-                args: {'videoModel': VideoModel(vid: "1231")}
-              );
+              HiNavigator.getInstance().onJumpTo(RouteStatus.detail,
+                  args: {'videoModel': VideoModel(vid: "1231")});
             },
             child: const Text("详情"),
           )
@@ -52,4 +51,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+  
+  @override
+  bool get wantKeepAlive => true;
 }

@@ -7,6 +7,7 @@ import 'package:flutter_bili/navigator/hi_navigator.dart';
 import 'package:flutter_bili/util/toast.dart';
 
 import 'model/video_model.dart';
+import 'navigator/bottom_navigator.dart';
 import 'page/home_page.dart';
 import 'page/login_page.dart';
 import 'page/regiatration_page.dart';
@@ -61,15 +62,14 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
   // 必要的时候可以通过navigationKey.currentState来获取到NavigatorState
   BiliRouteDelegate() : navigatorKey = GlobalKey<NavigatorState>() {
     // 实现跳转逻辑
-    HiNavigator.getInstance().registationRouteJump(
-      RouteJumpListener((routeStatus, {args}) {
-        _routeStatus = routeStatus;
-        if (routeStatus == RouteStatus.detail) {
-          videoModel = args!['videoModel'];
-        }
-        notifyListeners();
-      })
-    );
+    HiNavigator.getInstance()
+        .registationRouteJump(RouteJumpListener((routeStatus, {args}) {
+      _routeStatus = routeStatus;
+      if (routeStatus == RouteStatus.detail) {
+        videoModel = args!['videoModel'];
+      }
+      notifyListeners();
+    }));
   }
   RouteStatus _routeStatus = RouteStatus.home;
   List<MaterialPage> pages = [];
@@ -86,11 +86,11 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
     if (index != -1) {
       tempPages = tempPages.sublist(0, index);
     }
-    var page;
+    MaterialPage<dynamic>? page;
     if (routeStatus == RouteStatus.home) {
       // 跳转首页时，将栈中其他页面出栈，因为首页无法回退
       pages.clear();
-      page = pageWrap(const HomePage());
+      page = pageWrap(const BottomNavigator());
     } else if (routeStatus == RouteStatus.detail) {
       page = pageWrap(VideoDetailPage(videoModel: videoModel!));
     } else if (routeStatus == RouteStatus.registration) {
@@ -98,38 +98,41 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
     } else if (routeStatus == RouteStatus.login) {
       page = pageWrap(const LoginPage());
     }
-    tempPages = [...tempPages, page];
+    if (page != null) {
+      tempPages = [...tempPages, page];
+    }
     pages = tempPages;
 
     // 通知路由状态发生变化
     HiNavigator.getInstance().notify(tempPages, pages);
 
-    return WillPopScope(child: Navigator(
-      key: navigatorKey,
-      pages: pages,
-      onPopPage: (router, result) {
-        if (router.settings is MaterialPage) {
-          // 登录页未登录拦截
-          if ((router.settings as MaterialPage).child is LoginPage) {
-            if (!LoginDao.isLogin()) {
-              showToast("请先登录");
+    return WillPopScope(
+        onWillPop: () async => !await navigatorKey.currentState!.maybePop(),
+        child: Navigator(
+          key: navigatorKey,
+          pages: pages,
+          onPopPage: (router, result) {
+            if (router.settings is MaterialPage) {
+              // 登录页未登录拦截
+              if ((router.settings as MaterialPage).child is LoginPage) {
+                if (!LoginDao.isLogin()) {
+                  showToast("请先登录");
+                  return false;
+                }
+              }
+            }
+            // 执行返回操作
+            if (!router.didPop(result)) {
               return false;
             }
-          }
-        }
-        // 执行返回操作
-        if (!router.didPop(result)) {
-          return false;
-        }
-        var temp = [...pages];
-        pages.removeLast();
-        // 通知路由状态变化
-        HiNavigator.getInstance().notify(pages, temp);
-        return true;
-      },
-      // 安卓物理键返回，无法返回上一页
-    ), onWillPop: () async => !await navigatorKey.currentState!.maybePop(),
-    );
+            var temp = [...pages];
+            pages.removeLast();
+            // 通知路由状态变化
+            HiNavigator.getInstance().notify(pages, temp);
+            return true;
+          },
+          // 安卓物理键返回，无法返回上一页
+        ));
   }
 
   RouteStatus get routeStatus {
@@ -156,6 +159,6 @@ class BiliRoutePath {
 }
 
 /// 创建页面
-pageWrap(Widget child) {
+MaterialPage<dynamic> pageWrap(Widget child) {
   return MaterialPage(key: ValueKey(child.hashCode), child: child);
 }
