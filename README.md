@@ -1,8 +1,11 @@
 # flutter_bili
 
-A new Flutter project.
+flutter for Bilibili.
 
-## Getting Started
+# Install
+[flutter environment](https://docs.flutter.dev/get-started/install)
+
+## Feature
 
 This project is a starting point for a Flutter application.
 
