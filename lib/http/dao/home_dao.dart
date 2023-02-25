@@ -10,7 +10,6 @@ class HomeDao {
     request.addParams("pageSize", pagesize);
 
     var result = await HiNet.getInstance().fire(request);
-    print(result);
     return HomeModel.fromJson(result['data']);
   }
 
