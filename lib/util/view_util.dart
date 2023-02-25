@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bili/widget/navigation_bar.dart';
+import 'package:status_bar_control/status_bar_control.dart';
 
 Widget cachedImage(String url, {double? width, double? height}) {
   return CachedNetworkImage(
@@ -28,4 +30,15 @@ blackLinearGradient({bool fromTop = false}) {
         Colors.black12,
         Colors.transparent
       ]);
+}
+
+void changeStatusBarStyle(
+    {color = Colors.white, StatusStyle statusStyle = StatusStyle.darkContent}) {
+  StatusBarControl.setColor(color!);
+  var style = statusStyle;
+  if (style == StatusStyle.darkContent) {
+    StatusBarControl.setStyle(StatusBarStyle.DARK_CONTENT);
+  } else {
+    StatusBarControl.setStyle(StatusBarStyle.LIGHT_CONTENT);
+  }
 }

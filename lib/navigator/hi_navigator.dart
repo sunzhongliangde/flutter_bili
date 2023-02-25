@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bili/navigator/bottom_navigator.dart';
-import 'package:flutter_bili/page/home_page.dart';
 import 'package:flutter_bili/page/login_page.dart';
 import 'package:flutter_bili/page/regiatration_page.dart';
 import 'package:flutter_bili/page/video_detail_page.dart';
 
+// ignore: prefer_generic_function_type_aliases
 typedef RouteChangeListener(RouteStatusInfo current, RouteStatusInfo? pre);
 
 /// 创建页面

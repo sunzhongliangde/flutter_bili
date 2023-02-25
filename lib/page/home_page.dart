@@ -8,6 +8,7 @@ import 'package:flutter_bili/util/color.dart';
 import 'package:flutter_bili/util/toast.dart';
 
 import '../core/hi_state.dart';
+import '../util/logger.dart';
 import '../widget/navigation_bar.dart';
 
 class HomePage extends StatefulWidget {
@@ -31,9 +32,9 @@ class _HomePageState extends HiState<HomePage>
     // 注册路由监听
     HiNavigator.getInstance().addListener(listener = (current, pre) {
       if (widget == current.widget || current.widget is HomePage) {
-        print("首页页面显示");
+        Log.print("首页页面显示");
       } else if (widget == pre?.widget || pre?.widget is HomePage) {
-        print("首页页面dismiss");
+        Log.print("首页页面dismiss");
       }
     });
     loadData();

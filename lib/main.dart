@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bili/db/hi_cache.dart';
 import 'package:flutter_bili/http/dao/login_dao.dart';

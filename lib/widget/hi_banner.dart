@@ -4,6 +4,7 @@ import 'package:flutter_bili/model/video_model.dart';
 import 'package:flutter_bili/navigator/hi_navigator.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 
+import '../util/logger.dart';
 import '../util/view_util.dart';
 
 class HiBanner extends StatelessWidget {
@@ -68,7 +69,7 @@ class HiBanner extends StatelessWidget {
         args: {'videoModel': video}
       );
     } else {
-      print(bannerMo.url);
+      Log.print(bannerMo.url);
     }
   }
 }

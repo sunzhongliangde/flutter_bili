@@ -9,6 +9,7 @@ import 'package:chewie/src/models/subtitle_model.dart';
 import 'package:chewie/src/notifiers/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bili/util/color.dart';
+import 'package:flutter_bili/util/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -357,7 +358,7 @@ class _MaterialControlsState extends State<MaterialControls>
   void _onExpandCollapse() {
     Size size = chewieController.videoPlayerController.value.size;
     if (size.width == 0.0) {
-      print('_onExpandCollapse:videoPlayerController.value.size is null.');
+      Log.print('_onExpandCollapse:videoPlayerController.value.size is null.');
       return;
     }
     setState(() {

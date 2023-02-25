@@ -1,9 +1,10 @@
 // 自定义app导航栏
 import 'package:flutter/material.dart';
+import 'package:flutter_bili/util/view_util.dart';
 
 appBar(String title, String rightTitle, VoidCallback? rightButtonClick) {
   return AppBar(
-    elevation: 0.5,    // 这里设置为0就没有阴影了
+    elevation: 0.5, // 这里设置为0就没有阴影了
     centerTitle: true,
     titleSpacing: 0,
     leading: const BackButton(),
@@ -25,5 +26,37 @@ appBar(String title, String rightTitle, VoidCallback? rightButtonClick) {
         ),
       )
     ],
+  );
+}
+
+/// 视频详情页appbar
+videoAppBar() {
+  return Container(
+    padding: const EdgeInsets.only(right: 8),
+    decoration: BoxDecoration(gradient: blackLinearGradient(fromTop: true)),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+      const BackButton(
+        color: Colors.white,
+      ),
+      Row(
+        children: const [
+          Icon(
+            Icons.live_tv_rounded,
+            color: Colors.white,
+            size: 20,
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 12),
+            child: Icon(
+              Icons.more_vert_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+        ],
+      ),
+    ]),
   );
 }

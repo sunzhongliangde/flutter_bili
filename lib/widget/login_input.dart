@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../util/color.dart';
+// ignore: must_be_immutable
 class LoginInput extends StatefulWidget {
   final String title;
   final String? hint;

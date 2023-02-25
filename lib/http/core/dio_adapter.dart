@@ -3,6 +3,8 @@ import 'package:flutter_bili/http/core/hi_adapter.dart';
 import 'package:flutter_bili/http/core/hi_error.dart';
 import 'package:flutter_bili/http/request/base_request.dart';
 
+import '../../util/logger.dart';
+
 class DioAdapter extends HiNetAdapter {
   @override
   Future<HiNetResponse<T>> send<T>(BaseRequest request) async {
@@ -23,10 +25,10 @@ class DioAdapter extends HiNetAdapter {
     } on DioError catch (e) {
       error = e;
       response = e.response;
-      print("httpMethod: ${request.httpMethod()}");
-      print("requestParams: ${request.params}");
-      print("requestHeader: ${request.header}");
-      print("返回报错：${e.message}");
+      Log.print("httpMethod: ${request.httpMethod()}");
+      Log.print("requestParams: ${request.params}");
+      Log.print("requestHeader: ${request.header}");
+      Log.print("返回报错：${e.message}");
     }
 
     if (error != null) {
