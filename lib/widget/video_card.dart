@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bili/model/video_model.dart';
 import 'package:flutter_bili/navigator/hi_navigator.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 import '../util/format_util.dart';
 import '../util/view_util.dart';
@@ -130,7 +129,7 @@ class VideoCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(
+              child: cachedImage(
                 owner?.face ?? '',
                 width: 24,
                 height: 24,

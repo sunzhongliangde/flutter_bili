@@ -18,7 +18,7 @@ class HomeTabPage extends StatefulWidget {
   State<HomeTabPage> createState() => _HomeTabPageState();
 }
 
-class _HomeTabPageState extends State<HomeTabPage> {
+class _HomeTabPageState extends State<HomeTabPage> with AutomaticKeepAliveClientMixin {
   List<VideoModel> videoList = [];
   int pageIndex = 1;
 
@@ -30,6 +30,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.only(left: 8, right: 8),
@@ -81,4 +83,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
       showToast(e.message);
     }
   }
+  
+  @override
+  bool get wantKeepAlive => true;
 }

@@ -63,7 +63,6 @@ class _HomePageState extends HiState<HomePage>
           ),
           Container(
             color: Colors.white,
-            padding: const EdgeInsets.only(top: 30),
             child: _tabBar(),
           ),
           Flexible(
@@ -88,9 +87,10 @@ class _HomePageState extends HiState<HomePage>
         controller: _controller,
         isScrollable: true,
         labelColor: Colors.black,
-        indicator: const UnderlineTabIndicator(
-          borderSide: BorderSide(color: primary, width: 3),
-          insets: EdgeInsets.only(left: 15, right: 15),
+        indicator: UnderlineTabIndicator(
+          borderRadius: BorderRadius.circular(2),
+          borderSide: const BorderSide(color: primary, width: 3),
+          insets: const EdgeInsets.only(left: 15, right: 15),
         ),
         tabs: categoryList.map<Tab>((tab) {
           return Tab(

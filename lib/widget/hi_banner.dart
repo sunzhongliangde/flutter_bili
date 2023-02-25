@@ -4,6 +4,8 @@ import 'package:flutter_bili/model/video_model.dart';
 import 'package:flutter_bili/navigator/hi_navigator.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 
+import '../util/view_util.dart';
+
 class HiBanner extends StatelessWidget {
   final List<BannerMo>? bannerList;
   final double bannerHeight;
@@ -50,9 +52,8 @@ class HiBanner extends StatelessWidget {
         padding: padding,
         child: ClipRRect(
           borderRadius: const BorderRadius.all(Radius.circular(6)),
-          child: Image.network(
+          child: cachedImage(
             bannerMo.cover,
-            fit: BoxFit.cover,
           ),
         ),
       ),
