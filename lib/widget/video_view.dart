@@ -52,13 +52,14 @@ class _VideoViewState extends State<VideoView> {
       aspectRatio: widget.aspectRatio,
       autoPlay: widget.autoPlay!,
       looping: widget.loop!,
-      allowMuting: true,
+      allowMuting: false,
       allowPlaybackSpeedChanging: false,
       placeholder: _placeholder,
       materialProgressColors: _progressColors,
-      customControls: const MaterialControls(
-        showLoadingOnInitialize: false,
+      customControls: MaterialControls(
+        showLoadingOnInitialize: true,
         showBigPlayIcon: false,
+        bottomGradient: blackLinearGradient(),
       )
     );
   }

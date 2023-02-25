@@ -57,8 +57,8 @@ class _MaterialControlsState extends State<MaterialControls>
   bool _dragging = false;
   bool _displayTapped = false;
 
-  final barHeight = 48.0 * 1.5;
-  final marginSize = 5.0;
+  final barHeight = 35.0 * 1.5;
+  final marginSize = 2.0;
 
   late VideoPlayerController controller;
   ChewieController? _chewieController;
@@ -146,11 +146,11 @@ class _MaterialControlsState extends State<MaterialControls>
 
   @override
   void didChangeDependencies() {
-    final _oldController = _chewieController;
+    final oldController = _chewieController;
     _chewieController = ChewieController.of(context);
     controller = chewieController.videoPlayerController;
 
-    if (_oldController != chewieController) {
+    if (oldController != chewieController) {
       _dispose();
       _initialize();
     }
@@ -197,7 +197,7 @@ class _MaterialControlsState extends State<MaterialControls>
   AnimatedOpacity _buildBottomBar(
     BuildContext context,
   ) {
-    final iconColor = Theme.of(context).textTheme.button!.color;
+    final iconColor = Theme.of(context).textTheme.labelLarge!.color;
 
     return AnimatedOpacity(
       opacity: notifier.hideStuff ? 0.0 : 1.0,
@@ -255,7 +255,6 @@ class _MaterialControlsState extends State<MaterialControls>
         duration: const Duration(milliseconds: 300),
         child: Container(
           height: barHeight + (chewieController.isFullScreen ? 15.0 : 0),
-          margin: const EdgeInsets.only(right: 12.0),
           padding: const EdgeInsets.only(
             left: 8.0,
             right: 8.0,
@@ -314,7 +313,7 @@ class _MaterialControlsState extends State<MaterialControls>
     return Text(
       '${formatDuration(position)} / ${formatDuration(duration)}',
       style: const TextStyle(
-        fontSize: 14.0,
+        fontSize: 12.0,
         color: Colors.white,
       ),
     );
@@ -357,7 +356,7 @@ class _MaterialControlsState extends State<MaterialControls>
 
   void _onExpandCollapse() {
     Size size = chewieController.videoPlayerController.value.size;
-    if (size == null || size.width == 0.0) {
+    if (size.width == 0.0) {
       print('_onExpandCollapse:videoPlayerController.value.size is null.');
       return;
     }
@@ -419,7 +418,7 @@ class _MaterialControlsState extends State<MaterialControls>
   Widget _buildProgressBar() {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.only(right: 15, left: 0),
+        padding: const EdgeInsets.only(right: 10, left: 0),
         child: MaterialVideoProgressBar(
           controller,
           onDragStart: () {
