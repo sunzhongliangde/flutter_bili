@@ -101,7 +101,8 @@ class _HomePageState extends HiState<HomePage>
             child: _appBar(),
           ),
           Container(
-            color: Colors.white,
+            margin: const EdgeInsets.only(bottom: 5),
+            decoration: bottomBoxShadow(),
             child: _tabBar(),
           ),
           Flexible(

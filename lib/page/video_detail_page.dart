@@ -140,12 +140,13 @@ class _VideoDetailPageState extends State<VideoDetailPage>
 
   buildDetailContent() {
     return [
-      Container(
-        child: VideoDetailAuthor(owner: _videoModel!.owner!),
-      ),
+      // 作者
+      VideoDetailAuthor(owner: _videoModel!.owner!),
+      // 展开内容
       ExpandableContent(
         videoModel: _videoModel!,
       ),
+      // 收藏、点赞
       VideoToolbar(
         detailModel: _detailModel,
         videoModel: _videoModel,

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bili/util/format_util.dart';
@@ -46,6 +44,18 @@ void changeStatusBarStyle(
   } else {
     StatusBarControl.setStyle(StatusBarStyle.LIGHT_CONTENT);
   }
+}
+
+/// 底部阴影
+BoxDecoration bottomBoxShadow() {
+  return BoxDecoration(color: Colors.white, boxShadow: [
+    BoxShadow(
+      color: Colors.grey[100] ?? Colors.grey,
+      offset: const Offset(0, 5),
+      blurRadius: 5, // 模糊度
+      spreadRadius: 1, // 阴影扩散度
+    )
+  ]);
 }
 
 /// 左边图标，右边文字
