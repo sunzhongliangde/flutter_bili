@@ -18,7 +18,8 @@ class HomeTabPage extends StatefulWidget {
   State<HomeTabPage> createState() => _HomeTabPageState();
 }
 
-class _HomeTabPageState extends State<HomeTabPage> with AutomaticKeepAliveClientMixin {
+class _HomeTabPageState extends State<HomeTabPage>
+    with AutomaticKeepAliveClientMixin {
   List<VideoModel> videoList = [];
   int pageIndex = 1;
 
@@ -31,7 +32,7 @@ class _HomeTabPageState extends State<HomeTabPage> with AutomaticKeepAliveClient
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.only(left: 8, right: 8),
@@ -42,10 +43,7 @@ class _HomeTabPageState extends State<HomeTabPage> with AutomaticKeepAliveClient
           crossAxisSpacing: 8,
           children: [
             if (widget.bannerList != null)
-              StaggeredGridTile.fit(
-                crossAxisCellCount: 2, 
-                child: _banner()
-              ),
+              StaggeredGridTile.fit(crossAxisCellCount: 2, child: _banner()),
             ...videoList.map((video) {
               return StaggeredGridTile.fit(
                 crossAxisCellCount: 1,
@@ -59,7 +57,10 @@ class _HomeTabPageState extends State<HomeTabPage> with AutomaticKeepAliveClient
   }
 
   _banner() {
-    return HiBanner(bannerList: widget.bannerList);
+    return HiBanner(
+      bannerList: widget.bannerList,
+      padding: const EdgeInsets.only(left: 5, right: 5),
+    );
   }
 
   void _loadData([loadMore = false]) async {
@@ -83,7 +84,7 @@ class _HomeTabPageState extends State<HomeTabPage> with AutomaticKeepAliveClient
       showToast(e.message);
     }
   }
-  
+
   @override
   bool get wantKeepAlive => true;
 }
