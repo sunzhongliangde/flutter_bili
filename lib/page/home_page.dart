@@ -4,11 +4,15 @@ import 'package:flutter_bili/http/dao/home_dao.dart';
 import 'package:flutter_bili/model/home_model.dart';
 import 'package:flutter_bili/navigator/hi_navigator.dart';
 import 'package:flutter_bili/page/home_tab_page.dart';
+import 'package:flutter_bili/page/profile_page.dart';
+import 'package:flutter_bili/page/video_detail_page.dart';
 import 'package:flutter_bili/util/color.dart';
 import 'package:flutter_bili/util/toast.dart';
+import 'package:flutter_bili/util/view_util.dart';
 
 import '../core/hi_state.dart';
 import '../util/logger.dart';
+import '../widget/hi_tab.dart';
 import '../widget/navigation_bar.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,7 +24,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends HiState<HomePage>
-    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
+    with
+        AutomaticKeepAliveClientMixin,
+        TickerProviderStateMixin,
+        WidgetsBindingObserver {
   RouteChangeListener? listener;
   TabController? _controller;
   List<CategoryMo> categoryList = [];
@@ -31,23 +38,54 @@ class _HomePageState extends HiState<HomePage>
     super.initState();
     // 注册路由监听
     HiNavigator.getInstance().addListener(listener = (current, pre) {
+      _currentPage = current.widget;
       if (widget == current.widget || current.widget is HomePage) {
         Log.print("首页页面显示");
       } else if (widget == pre?.widget || pre?.widget is HomePage) {
         Log.print("首页页面dismiss");
       }
+      // 返回到首页时，恢复状态栏
+      if (pre?.widget is VideoDetailPage && current.widget is! ProfilePage) {
+        var statusStyle = StatusStyle.darkContent;
+        changeStatusBarStyle(color: Colors.white, statusStyle: statusStyle);
+      }
     });
+    // 注册前后台切换监听
+    WidgetsBinding.instance.addObserver(this);
+    // 加载数据
     loadData();
+    // 创建子视图
     _controller = TabController(length: categoryList.length, vsync: this);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     if (listener != null) {
       HiNavigator.getInstance().removeListener(listener!);
     }
     _controller?.dispose();
     super.dispose();
+  }
+
+  Widget? _currentPage;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.inactive:
+        break;
+      case AppLifecycleState.resumed:
+        if (_currentPage != null && (_currentPage is! VideoDetailPage)) {
+          changeStatusBarStyle(
+              color: Colors.white, statusStyle: StatusStyle.darkContent);
+        }
+        break;
+      case AppLifecycleState.paused:
+        break;
+      case AppLifecycleState.detached:
+        break;
+    }
   }
 
   @override
@@ -84,25 +122,18 @@ class _HomePageState extends HiState<HomePage>
   bool get wantKeepAlive => true;
 
   _tabBar() {
-    return TabBar(
-        controller: _controller,
-        isScrollable: true,
-        labelColor: Colors.black,
-        indicator: UnderlineTabIndicator(
-          borderRadius: BorderRadius.circular(2),
-          borderSide: const BorderSide(color: primary, width: 3),
-          insets: const EdgeInsets.only(left: 15, right: 15),
-        ),
-        tabs: categoryList.map<Tab>((tab) {
-          return Tab(
-              child: Padding(
-            padding: const EdgeInsets.only(left: 5, right: 5),
-            child: Text(
-              tab.name,
-              style: const TextStyle(fontSize: 16),
-            ),
-          ));
-        }).toList());
+    return HiTab(
+      categoryList.map<Tab>((tab) {
+        return Tab(
+          text: tab.name,
+        );
+      }).toList(),
+      controller: _controller!,
+      fontSize: 16,
+      borderWidth: 2,
+      unselectedLabelColor: Colors.black54,
+      insets: const EdgeInsets.only(left: 10, right: 10),
+    );
   }
 
   void loadData() async {
