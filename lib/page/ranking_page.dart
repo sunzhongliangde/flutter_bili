@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bili/http/dao/ranking_dao.dart';
+import 'package:flutter_bili/page/ranking_tab_page.dart';
 import 'package:flutter_bili/widget/hi_tab.dart';
 import 'package:flutter_bili/widget/navigation_bar.dart';
 
@@ -33,6 +35,7 @@ class _RangkingPageState extends State<RankingPage>
   void initState() {
     super.initState();
     _controller = TabController(length: rankTab.length, vsync: this);
+    RankingDao.get(rankTab[0]['key'] ?? 'like');
   }
 
   @override
@@ -75,8 +78,8 @@ class _RangkingPageState extends State<RankingPage>
       controller: _controller,
       children: [
         ...rankTab.map<Widget>((tab) {
-          return Container(
-            child: Text(tab['name']!),
+          return RankingTabPage(
+            sort: tab['key'] ?? '',
           );
         }).toList(),
       ],
