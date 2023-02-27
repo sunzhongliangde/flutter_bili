@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bili/barrage/hi_barrage.dart';
 import 'package:flutter_bili/http/core/hi_error.dart';
 import 'package:flutter_bili/http/dao/favorite_dao.dart';
 import 'package:flutter_bili/http/dao/video_detail_dao.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_bili/widget/navigation_bar.dart';
 import 'package:flutter_bili/widget/video_large_card.dart';
 import 'package:flutter_bili/widget/video_view.dart';
 
+import '../barrage/hi_socket.dart';
 import '../model/video_detail_model.dart';
 import '../model/video_model.dart';
 import '../widget/expandable_content.dart';
@@ -35,6 +37,7 @@ class _VideoDetailPageState extends State<VideoDetailPage>
   VideoModel? _videoModel;
   // 关联视频list
   List<VideoModel> videoList = [];
+  final _barrageKey = GlobalKey<HiBarrageState>();
 
   @override
   void initState() {
@@ -87,6 +90,11 @@ class _VideoDetailPageState extends State<VideoDetailPage>
       url: model.url!,
       cover: model.cover,
       overLayUI: videoAppBar(),
+      barrageUI: HiBarrage(
+        vid: model.vid, 
+        key: _barrageKey,
+        autoPlay: true,
+      ),
     );
   }
 

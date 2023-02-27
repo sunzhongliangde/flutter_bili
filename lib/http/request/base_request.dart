@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
+import '../../util/hi_constants.dart';
 import '../dao/login_dao.dart';
 
 enum HttpMethod {
@@ -52,8 +53,8 @@ abstract class BaseRequest {
 
   // add headers
   Map<String, String> header = <String, String>{
-    "course-flag": "fa",
-    "auth-token": "ZmEtMjAyMS0wNC0xMiAyMToyMjoyMC1mYQ==fa"
+    HiConstants.courseFlagK: HiConstants.courseFlagV,
+    HiConstants.authTokenK: HiConstants.authTokenV
   };
   BaseRequest addHeader(String k, Object v) {
     header[k] = v.toString();

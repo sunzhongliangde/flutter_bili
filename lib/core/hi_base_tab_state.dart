@@ -22,13 +22,13 @@ abstract class HiBaseTabState<M, L, T extends StatefulWidget> extends HiState<T>
     scrollController.addListener(() {
       var dis = scrollController.position.maxScrollExtent -
           scrollController.position.pixels;
-      print('dis:$dis');
+      //print('dis:$dis');
       //当距离底部不足300时加载更多
       if (dis < 300 &&
           !loading &&
           //fix 当列表高度不满屏幕高度时不执行加载更多
           scrollController.position.maxScrollExtent != 0) {
-        print('------_loadData---');
+        //print('------_loadData---');
         loadData(loadMore: true);
       }
     });
@@ -60,7 +60,7 @@ abstract class HiBaseTabState<M, L, T extends StatefulWidget> extends HiState<T>
 
   Future<void> loadData({loadMore = false}) async {
     if (loading) {
-      print("上次加载还没完成...");
+      //print("上次加载还没完成...");
       return;
     }
     loading = true;
@@ -68,7 +68,7 @@ abstract class HiBaseTabState<M, L, T extends StatefulWidget> extends HiState<T>
       pageIndex = 1;
     }
     var currentIndex = pageIndex + (loadMore ? 1 : 0);
-    print('loading:currentIndex:$currentIndex');
+    //print('loading:currentIndex:$currentIndex');
     try {
       var result = await getData(currentIndex);
       setState(() {
