@@ -27,7 +27,7 @@ class VideoView extends StatefulWidget {
       this.loop = false,
       this.aspectRatio = 16 / 9,
       this.barrageUI,
-      this.overLayUI});
+      this.overLayUI, required overlayUI});
 
   @override
   State<VideoView> createState() => _VideoViewState();
