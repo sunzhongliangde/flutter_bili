@@ -6,9 +6,10 @@ import 'package:flutter_bili/navigator/hi_navigator.dart';
 import 'package:flutter_bili/page/home_tab_page.dart';
 import 'package:flutter_bili/page/profile_page.dart';
 import 'package:flutter_bili/page/video_detail_page.dart';
-import 'package:flutter_bili/util/color.dart';
+import 'package:flutter_bili/provider/theme_provider.dart';
 import 'package:flutter_bili/util/toast.dart';
 import 'package:flutter_bili/util/view_util.dart';
+import 'package:provider/provider.dart';
 
 import '../core/hi_state.dart';
 import '../util/logger.dart';
@@ -68,6 +69,12 @@ class _HomePageState extends HiState<HomePage>
     super.dispose();
   }
 
+  @override
+  void didChangePlatformBrightness() {
+    context.read<ThemeProvider>().darkModeChange();
+    super.didChangePlatformBrightness();
+  }
+
   Widget? _currentPage;
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -78,7 +85,9 @@ class _HomePageState extends HiState<HomePage>
       case AppLifecycleState.resumed:
         if (_currentPage != null && (_currentPage is! VideoDetailPage)) {
           changeStatusBarStyle(
-              color: Colors.white, statusStyle: StatusStyle.darkContent);
+              color: Colors.white,
+              statusStyle: StatusStyle.darkContent,
+              context: context);
         }
         break;
       case AppLifecycleState.paused:
@@ -102,7 +111,7 @@ class _HomePageState extends HiState<HomePage>
           ),
           Container(
             margin: const EdgeInsets.only(bottom: 5),
-            decoration: bottomBoxShadow(),
+            decoration: bottomBoxShadow(context),
             child: _tabBar(),
           ),
           Flexible(

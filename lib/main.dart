@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bili/db/hi_cache.dart';
 import 'package:flutter_bili/http/dao/login_dao.dart';
 import 'package:flutter_bili/navigator/hi_navigator.dart';
+import 'package:flutter_bili/page/dark_mode_page.dart';
 import 'package:flutter_bili/util/toast.dart';
+import 'package:provider/provider.dart';
 
 import 'model/video_model.dart';
 import 'navigator/bottom_navigator.dart';
 import 'page/login_page.dart';
 import 'page/regiatration_page.dart';
 import 'page/video_detail_page.dart';
-import 'util/color.dart';
+import 'provider/hi_provider.dart';
+import 'provider/theme_provider.dart';
 
 void main() {
   runApp(const BiliApp());
@@ -39,12 +42,16 @@ class _BiliAppState extends State<BiliApp> {
                 child: CircularProgressIndicator(),
               ));
 
-        return MaterialApp(
-          home: widget,
-          theme: ThemeData(
-            primarySwatch: white,
-          ),
-        );
+        return MultiProvider(
+              providers: topProviders,
+              child: Consumer<ThemeProvider>(builder: (BuildContext context,
+                  ThemeProvider themeProvider, Widget? child) {
+                return MaterialApp(
+                    home: widget,
+                    theme: themeProvider.getTheme(),
+                    darkTheme: themeProvider.getTheme(isDarkMode: true),
+                    themeMode: themeProvider.getThemeMode());
+              }));
       },
     );
   }
@@ -94,6 +101,8 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
       page = pageWrap(const RegistrationPage());
     } else if (routeStatus == RouteStatus.login) {
       page = pageWrap(const LoginPage());
+    } else if (routeStatus == RouteStatus.darkModePage) {
+      page = pageWrap(const DarkModePage());
     }
     if (page != null) {
       tempPages = [...tempPages, page];

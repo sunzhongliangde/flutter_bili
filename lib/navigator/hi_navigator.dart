@@ -4,6 +4,8 @@ import 'package:flutter_bili/page/login_page.dart';
 import 'package:flutter_bili/page/regiatration_page.dart';
 import 'package:flutter_bili/page/video_detail_page.dart';
 
+import '../page/dark_mode_page.dart';
+
 // ignore: prefer_generic_function_type_aliases
 typedef RouteChangeListener(RouteStatusInfo current, RouteStatusInfo? pre);
 
@@ -30,6 +32,7 @@ enum RouteStatus {
   home,
   detail,
   unknow,
+  darkModePage,
 }
 
 // 获取page对应的RouteStatus
@@ -42,6 +45,8 @@ RouteStatus getStatus(MaterialPage page) {
     return RouteStatus.home;
   } else if (page.child is VideoDetailPage) {
     return RouteStatus.detail;
+  } else if (page.child is DarkModePage) {
+    return RouteStatus.darkModePage;
   }
   return RouteStatus.unknow;
 }
@@ -68,6 +73,11 @@ class HiNavigator extends _RouteJumpListener {
   static HiNavigator getInstance() {
     _instance ??= HiNavigator._();
     return _instance!;
+  }
+
+  // 添加get方法
+  RouteStatusInfo? getCurrent() {
+    return _current;
   }
 
   // 注册路由跳转逻辑

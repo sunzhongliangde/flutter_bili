@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bili/model/video_model.dart';
 import 'package:flutter_bili/navigator/hi_navigator.dart';
+import 'package:flutter_bili/provider/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../util/format_util.dart';
 import '../util/view_util.dart';
@@ -11,6 +13,10 @@ class VideoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var themeProvider = context.watch<ThemeProvider>();
+    Color textColor = themeProvider.isDark() ? Colors.white70 : Colors.black87;
+    if (themeProvider.isDark()) {
+    } else {}
     return InkWell(
       onTap: () {
         HiNavigator.getInstance()
@@ -27,7 +33,7 @@ class VideoCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _itemImage(context),
-                _infoText(),
+                _infoText(textColor),
               ],
             ),
           ),
@@ -99,7 +105,7 @@ class VideoCard extends StatelessWidget {
     );
   }
 
-  _infoText() {
+  _infoText(Color textColor) {
     return Expanded(
         child: Container(
       padding: const EdgeInsets.fromLTRB(8, 5, 8, 5),
@@ -111,15 +117,15 @@ class VideoCard extends StatelessWidget {
             videoModel.title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 12, color: Colors.black87),
+            style: TextStyle(fontSize: 12, color: textColor),
           ),
-          _owner(),
+          _owner(textColor),
         ],
       ),
     ));
   }
 
-  _owner() {
+  _owner(Color textColor) {
     var owner = videoModel.owner;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -139,7 +145,7 @@ class VideoCard extends StatelessWidget {
               padding: const EdgeInsets.only(left: 8),
               child: Text(
                 owner?.name ?? '',
-                style: const TextStyle(fontSize: 11, color: Colors.black87),
+                style: TextStyle(fontSize: 11, color: textColor),
               ),
             )
           ],

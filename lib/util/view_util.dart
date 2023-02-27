@@ -1,7 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bili/navigator/hi_navigator.dart';
+import 'package:flutter_bili/page/profile_page.dart';
+import 'package:flutter_bili/page/video_detail_page.dart';
+import 'package:flutter_bili/provider/theme_provider.dart';
+import 'package:flutter_bili/util/color.dart';
 import 'package:flutter_bili/util/format_util.dart';
 import 'package:flutter_bili/widget/navigation_bar.dart';
+import 'package:provider/provider.dart';
 import 'package:status_bar_control/status_bar_control.dart';
 
 /// 带磁盘缓存的图片
@@ -36,7 +42,22 @@ blackLinearGradient({bool fromTop = false}) {
 
 /// 更改状态栏style
 void changeStatusBarStyle(
-    {color = Colors.white, StatusStyle statusStyle = StatusStyle.darkContent}) {
+    {color = Colors.white,
+    StatusStyle statusStyle = StatusStyle.darkContent,
+    BuildContext? context}) {
+  if (context != null) {
+    var themeProvider = context.watch<ThemeProvider>();
+    if (themeProvider.isDark()) {
+      statusStyle = StatusStyle.lightContent;
+      color = HiColor.dark_bg;
+    }
+  }
+  var page = HiNavigator.getInstance().getCurrent()?.widget;
+  if (page is ProfilePage) {
+    color = Colors.transparent;
+  } else if (page is VideoDetailPage) {
+    color = Colors.black;
+  }
   StatusBarControl.setColor(color!);
   var style = statusStyle;
   if (style == StatusStyle.darkContent) {
@@ -47,7 +68,13 @@ void changeStatusBarStyle(
 }
 
 /// 底部阴影
-BoxDecoration bottomBoxShadow() {
+BoxDecoration? bottomBoxShadow(BuildContext context) {
+  var themeProvider = context.watch<ThemeProvider>();
+  // 暗黑模式，不添加底部阴影
+  if (themeProvider.isDark()) {
+    return null;
+  }
+
   return BoxDecoration(color: Colors.white, boxShadow: [
     BoxShadow(
       color: Colors.grey[100] ?? Colors.grey,

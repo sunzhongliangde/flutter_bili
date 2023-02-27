@@ -57,7 +57,7 @@ class _RangkingPageState extends State<RankingPage>
       child: Container(
         alignment: Alignment.center,
         child: _tabbar(),
-        decoration: bottomBoxShadow(),
+        decoration: bottomBoxShadow(context),
       ),
     );
   }

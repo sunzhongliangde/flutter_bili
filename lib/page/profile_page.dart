@@ -4,6 +4,7 @@ import 'package:flutter_bili/http/dao/profile_dao.dart';
 import 'package:flutter_bili/model/profile_model.dart';
 import 'package:flutter_bili/util/toast.dart';
 import 'package:flutter_bili/util/view_util.dart';
+import 'package:flutter_bili/widget/dark_mode_item.dart';
 import 'package:flutter_bili/widget/hi_banner.dart';
 
 import '../widget/benefit_card.dart';
@@ -118,6 +119,7 @@ class _ProfilePageState extends State<ProfilePage>
       BenefitCard(
         benefitList: _profileModel!.benefitList,
       ),
+      const DarkModelItem(),
     ];
   }
 
