@@ -30,6 +30,7 @@ class VideoHeader extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       owner?.name ?? '',

@@ -1,7 +1,8 @@
-// 自定义app导航栏
 import 'package:flutter/material.dart';
-import 'package:flutter_bili/util/view_util.dart';
 
+import '../util/view_util.dart';
+
+///自定义顶部appBar
 appBar(String title, String rightTitle, VoidCallback? rightButtonClick) {
   return AppBar(
     elevation: 0.5, // 这里设置为0就没有阴影了
@@ -20,7 +21,7 @@ appBar(String title, String rightTitle, VoidCallback? rightButtonClick) {
           alignment: Alignment.center,
           child: Text(
             rightTitle,
-            style: TextStyle(fontSize: 18, color: Colors.grey[800]),
+            style: TextStyle(fontSize: 18, color: Colors.grey[500]),
             textAlign: TextAlign.center,
           ),
         ),
@@ -29,7 +30,7 @@ appBar(String title, String rightTitle, VoidCallback? rightButtonClick) {
   );
 }
 
-/// 视频详情页appbar
+///视频详情页appBar
 videoAppBar() {
   return Container(
     padding: const EdgeInsets.only(right: 8),
@@ -37,26 +38,20 @@ videoAppBar() {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-      const BackButton(
-        color: Colors.white,
-      ),
-      Row(
-        children: const [
-          Icon(
-            Icons.live_tv_rounded,
-            color: Colors.white,
-            size: 20,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 12),
-            child: Icon(
-              Icons.more_vert_rounded,
-              color: Colors.white,
-              size: 20,
-            ),
-          ),
-        ],
-      ),
-    ]),
+        const BackButton(
+          color: Colors.white,
+        ),
+        Row(
+          children: const [
+            Icon(Icons.live_tv_rounded, color: Colors.white, size: 20),
+            Padding(
+              padding: EdgeInsets.only(left: 12),
+              child:
+                  Icon(Icons.more_vert_rounded, color: Colors.white, size: 20),
+            )
+          ],
+        )
+      ],
+    ),
   );
 }
