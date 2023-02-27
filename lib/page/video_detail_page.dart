@@ -12,16 +12,20 @@ import 'package:flutter_bili/widget/hi_tab.dart';
 import 'package:flutter_bili/widget/navigation_bar.dart';
 import 'package:flutter_bili/widget/video_large_card.dart';
 import 'package:flutter_bili/widget/video_view.dart';
+import 'package:flutter_overlay/flutter_overlay.dart';
 
-import '../barrage/hi_socket.dart';
+import '../barrage/barrage_input.dart';
+import '../barrage/barrage_switch.dart';
+import '../http/dao/like_dao.dart';
 import '../model/video_detail_model.dart';
 import '../model/video_model.dart';
 import '../widget/expandable_content.dart';
-import '../widget/video_detail_author.dart';
+import '../widget/video_header.dart';
 import '../widget/video_toolbar.dart';
 
 class VideoDetailPage extends StatefulWidget {
   final VideoModel videoModel;
+
   const VideoDetailPage({super.key, required this.videoModel});
 
   @override
@@ -30,28 +34,29 @@ class VideoDetailPage extends StatefulWidget {
 
 class _VideoDetailPageState extends State<VideoDetailPage>
     with TickerProviderStateMixin {
-  TabController? _controller;
-  List tabs = ['简介', '评论239'];
-  VideoDetailModel? _detailModel;
+  late TabController _controller;
+  List tabs = ["简介", "评论288"];
+  VideoDetailModel? videoDetailMo;
   // 初始化的时候先拿外界传入的model，进来页面后加载网络请求，取出数据
-  VideoModel? _videoModel;
-  // 关联视频list
+  VideoModel? videoModel;
   List<VideoModel> videoList = [];
   final _barrageKey = GlobalKey<HiBarrageState>();
+  bool _inoutShowing = false;
 
   @override
   void initState() {
     super.initState();
+    //黑色状态栏，仅Android
     changeStatusBarStyle(
         color: Colors.black, statusStyle: StatusStyle.lightContent);
     _controller = TabController(length: tabs.length, vsync: this);
-    _videoModel = widget.videoModel;
+    videoModel = widget.videoModel;
     _loadDetail();
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -61,7 +66,7 @@ class _VideoDetailPageState extends State<VideoDetailPage>
         body: MediaQuery.removePadding(
       removeTop: Platform.isIOS,
       context: context,
-      child: _videoModel?.url != null
+      child: videoModel?.url != null
           ? Column(
               children: [
                 NavigationStyleBar(
@@ -85,20 +90,17 @@ class _VideoDetailPageState extends State<VideoDetailPage>
   }
 
   _buildVideoView() {
-    var model = _videoModel!;
+    var model = videoModel;
     return VideoView(
-      url: model.url!,
+      url: model!.url!,
       cover: model.cover,
       overLayUI: videoAppBar(),
-      barrageUI: HiBarrage(
-        vid: model.vid, 
-        key: _barrageKey,
-        autoPlay: true,
-      ),
+      barrageUI: HiBarrage(key: _barrageKey, vid: model.vid, autoPlay: true),
     );
   }
 
   _buildTabNavigation() {
+    //使用Material实现阴影效果
     return Material(
       elevation: 5,
       shadowColor: Colors.grey[100],
@@ -109,102 +111,136 @@ class _VideoDetailPageState extends State<VideoDetailPage>
         color: Colors.white,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _tabbar(),
-            const Padding(
-              padding: EdgeInsets.only(right: 20),
-              child: Icon(
-                Icons.live_tv_rounded,
-                color: Colors.grey,
-              ),
-            ),
-          ],
+          children: [_tabBar(), _buildBarrageBtn()],
         ),
       ),
     );
   }
 
-  _tabbar() {
+  _tabBar() {
     return HiTab(
-      tabs.map<Tab>((title) {
+      tabs.map<Tab>((name) {
         return Tab(
-          text: title,
+          text: name,
         );
       }).toList(),
-      controller: _controller!,
       borderWidth: 2,
+      controller: _controller,
     );
   }
 
   _buildDetailList() {
     return ListView(
-      padding: EdgeInsets.zero,
-      children: [
-        ...buildDetailContent(),
-        ...buildVideoList(),
-      ],
+      padding: const EdgeInsets.all(0),
+      children: [...buildContents(), ..._buildVideoList()],
     );
   }
 
-  buildDetailContent() {
+  buildContents() {
     return [
-      // 作者
-      VideoDetailAuthor(owner: _videoModel!.owner!),
-      // 展开内容
+      VideoHeader(
+        owner: videoModel?.owner,
+      ),
       ExpandableContent(
-        videoModel: _videoModel!,
+        videoModel: videoModel!,
       ),
-      // 收藏、点赞
       VideoToolbar(
-        detailModel: _detailModel,
-        videoModel: _videoModel,
+        detailModel: videoDetailMo,
+        videoModel: videoModel!,
         onLike: _doLike,
-        onUnLike: _doUnLike,
-        onFavorite: _doFavorite,
-      ),
+        onUnLike: _onUnLike,
+        onFavorite: _onFavorite,
+      )
     ];
   }
 
   void _loadDetail() async {
     try {
-      VideoDetailModel detail = await VideoDetailDao.get(_videoModel!.vid);
+      VideoDetailModel result = await VideoDetailDao.get(videoModel!.vid);
       setState(() {
-        _detailModel = detail;
-        _videoModel = detail.videoInfo;
-
-        videoList = detail.videoList;
+        videoDetailMo = result;
+        //更新旧的数据
+        videoModel = result.videoInfo;
+        videoList = result.videoList;
       });
     } on NeedAuth catch (e) {
       showToast(e.message);
     }
   }
 
-  // 点赞
-  void _doLike() {}
-  // 取消点赞
-  void _doUnLike() {}
-  // 收藏
-  void _doFavorite() async {
+  ///点赞
+  _doLike() async {
     try {
-      var result = await FavoriteDao.favorite(
-          _videoModel!.vid, !(_detailModel?.isFavorite ?? false));
-      if (result['code'] == 0) {
-        setState(() {
-          _detailModel?.isFavorite = !(_detailModel?.isFavorite ?? false);
-          if (_detailModel?.isFavorite == true) {
-            _videoModel?.favorite += 1;
-          } else {
-            _videoModel?.favorite -= 1;
-          }
-        });
+      var result = await LikeDao.like(videoModel!.vid, !videoDetailMo!.isLike);
+      videoDetailMo!.isLike = !videoDetailMo!.isLike;
+      if (videoDetailMo!.isLike) {
+        videoModel!.like += 1;
+      } else {
+        videoModel!.like -= 1;
       }
+      setState(() {
+        videoDetailMo = videoDetailMo;
+        videoModel = videoModel;
+      });
       showToast(result['msg']);
     } on NeedAuth catch (e) {
       showToast(e.message);
     }
   }
 
-  buildVideoList() {
-    return videoList.map((e) => VideoLargeCard(videoModel: e));
+  ///取消点赞
+  void _onUnLike() {}
+
+  ///收藏
+  void _onFavorite() async {
+    try {
+      var result = await FavoriteDao.favorite(
+          videoModel!.vid, !videoDetailMo!.isFavorite);
+      videoDetailMo!.isFavorite = !videoDetailMo!.isFavorite;
+      if (videoDetailMo!.isFavorite) {
+        videoModel!.favorite += 1;
+      } else {
+        videoModel!.favorite -= 1;
+      }
+      setState(() {
+        videoDetailMo = videoDetailMo;
+        videoModel = videoModel;
+      });
+      showToast(result['msg']);
+    } on NeedAuth catch (e) {
+      showToast(e.message);
+    }
+  }
+
+  _buildVideoList() {
+    return videoList
+        .map((VideoModel mo) => VideoLargeCard(videoModel: mo))
+        .toList();
+  }
+
+  _buildBarrageBtn() {
+    return BarrageSwitch(
+        inoutShowing: _inoutShowing,
+        onShowInput: () {
+          setState(() {
+            _inoutShowing = true;
+          });
+          HiOverlay.show(context, child: BarrageInput(
+            onTabClose: () {
+              setState(() {
+                _inoutShowing = false;
+              });
+            },
+          )).then((value) {
+            _barrageKey.currentState!.send(value);
+          });
+        },
+        onBarrageSwitch: (open) {
+          if (open) {
+            _barrageKey.currentState!.play();
+          } else {
+            _barrageKey.currentState!.pause();
+          }
+        });
   }
 }
