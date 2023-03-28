@@ -7,13 +7,8 @@ flutter for Bilibili.
 
 ## Feature
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img height="50%" src="https://github.com/sunzhongliangde/flutter_bili/site_resource/1.png" referrerpolicy="no-referrer">
+<img height="50%" src="https://github.com/sunzhongliangde/flutter_bili/site_resource/2.png" referrerpolicy="no-referrer">
+<img height="50%" src="https://github.com/sunzhongliangde/flutter_bili/site_resource/3.png" referrerpolicy="no-referrer">
+<img height="50%" src="https://github.com/sunzhongliangde/flutter_bili/site_resource/4.png" referrerpolicy="no-referrer">
+<img height="50%" src="https://github.com/sunzhongliangde/flutter_bili/site_resource/5.png" referrerpolicy="no-referrer">
