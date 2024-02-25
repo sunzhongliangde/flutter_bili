@@ -1,0 +1,63 @@
+name: release-ios
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build_with_signing:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+                    
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@v1.6.2
+        with: 
+          sdk: 2.19
+
+      - name: Install and set Flutter version
+        uses: subosito/flutter-action@v2
+        with:
+          #flutter-version: '3.x'
+          channel: 'stable'
+
+      - name: Install flutter dependency
+        run: flutter pub get
+
+      - name: build
+        run: bundle exec fastlane release
+        env:
+          BUILD_PODS: true
+          PODS_PATH: ${{ github.workspace }}/ios
+          APPLE_KEY_ID: ${{secrets.APPLE_KEY_ID}}
+          APPLE_KEY_ISSUER_ID: ${{secrets.APPLE_KEY_ISSUER_ID}}
+          APPLE_KEY_CONTENT: ${{secrets.APPLE_KEY_CONTENT}}
+          APPLE_ID: ${{secrets.APPLE_ID}}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL: ${{secrets.MATCH_GIT_URL}}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{secrets.MATCH_GIT_BASIC_AUTHORIZATION}}
+          MATCH_TYPE: adhoc # can be appstore, adhoc, development, enterprise, developer_id, mac_installer_distribution, developer_id_installer
+          EXPORT_METHOD: ad-hoc # Valid values are: app-store, validation, ad-hoc, package, enterprise, development, developer-id and mac-application
+          CONFIGURATION: Release
+          SCHEME: Runner
+          WORKSPACE_PATH: ${{ github.workspace }}/ios/Runner.xcworkspace
+          PROJECT_PATH: ${{ github.workspace }}/ios/Runner.xcodeproj
+          INCREMENT_BUILD_NUMBER: false
+          IOS_APP_ID: com.bili.video
+          TEAM_ID: ${{secrets.TEAM_ID}}
+          OUTPUT_PATH: build-${{ github.sha }}.ipa
+          
+      - name: Publish iOS Artefacts
+        uses: PGYER/pgyer-upload-app-action@v1.3
+        with:
+          _api_key: ${{ secrets.PGYER_API_TOKEN }} # for example
+          appFilePath: build-${{ github.sha }}.ipa
+
+      # - name: Publish iOS Artefacts
+      #   uses: actions/upload-artifact@v4.3.1
+      #   with:
+      #     name: release-ios
+      #     path: build-${{ github.sha }}.ipa
+      #     if-no-files-found: error
