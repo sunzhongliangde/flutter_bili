@@ -3,7 +3,7 @@ import 'package:chewie/chewie.dart' hide MaterialControls;
 import 'package:flutter/services.dart';
 import 'package:flutter_bili/util/color.dart';
 import 'package:flutter_bili/util/view_util.dart';
-import 'package:orientation/orientation.dart';
+//import 'package:orientation/orientation.dart';
 import 'package:video_player/video_player.dart';
 
 import 'hi_video_control.dart';
@@ -95,7 +95,7 @@ class _VideoViewState extends State<VideoView> {
   void _fullScreenListener() {
     Size size = MediaQuery.of(context).size;
     if (size.width > size.height) {
-      OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
+      //OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
     }
   }
 }
