@@ -65,9 +65,9 @@ class ThemeProvider extends ChangeNotifier {
       // 错误状态颜色
       errorColor: isDarkMode ? HiColor.dark_red : HiColor.red,
       // 主色调(比如icon的色调)
-      primaryColor: isDarkMode ? HiColor.dark_bg : white,
+      primaryColor: isDarkMode ? HiColor.dark_bg : white, // primaryColor is deprecated
       // 文字的强调色
-      accentColor: isDarkMode ? primary[50] : white,
+      // accentColor: isDarkMode ? primary[50] : white, // accentColor is deprecated, not reference
       // Tab指示器的颜色
       indicatorColor: isDarkMode ? primary[50] : white,
       // 页面背景色
