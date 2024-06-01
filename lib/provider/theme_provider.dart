@@ -63,7 +63,7 @@ class ThemeProvider extends ChangeNotifier {
       // 亮度
       brightness: isDarkMode ? Brightness.dark : Brightness.light,
       // 错误状态颜色
-      errorColor: isDarkMode ? HiColor.dark_red : HiColor.red,
+      // errorColor: isDarkMode ? HiColor.dark_red : HiColor.red,
       // 主色调(比如icon的色调)
       primaryColor: isDarkMode ? HiColor.dark_bg : white, // primaryColor is deprecated
       // 文字的强调色
